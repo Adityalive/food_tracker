@@ -1,0 +1,135 @@
+Food Tracking App
+
+A full-stack web application that allows users to track their food intake by uploading images, recognizing food items with AI, and logging nutrition data. The app uses React for the frontend, Express and MongoDB for the backend, and integrates with Clarifai for image recognition and USDA for nutrition data.
+
+Features
+- User authentication (register/login)
+- Image upload and preview
+- AI-powered food recognition
+- Portion size selection
+- Nutrition data retrieval (cached for efficiency)
+- Food log creation and management
+- History view with edit/delete options
+
+Database Models
+
+User Model
+- _id
+- name
+- email
+- password (hashed with bcrypt)
+- createdAt
+- settings (optional: units preference, dietary goals)
+
+FoodLog Model
+- _id
+- userId (reference to User)
+- imageUrl (Cloudinary URL)
+- foodName
+- portionSize
+- calories
+- protein
+- carbs
+- fats
+- fiber
+- otherNutrients (optional)
+- confidence (AI confidence score)
+- createdAt
+- mealType (breakfast/lunch/dinner/snack - optional)
+
+FoodDatabase Model (Optional - cache USDA data)
+- _id
+- foodName
+- nutritionPer100g { calories, protein, carbs, fats, fiber }
+- usdaId
+- lastUpdated
+
+Step-by-Step Architecture
+
+STEP 1: User Authentication
+Frontend (React): Login/Register pages, form validation, JWT token storage
+Backend (Express): /api/auth/register, /api/auth/login, /api/auth/me
+Database: User model with hashed passwords (bcrypt)
+Middleware: authMiddleware.js to protect routes
+
+STEP 2: Image Upload Flow
+Frontend: File input, image preview, upload button
+Backend Route: /api/upload/image (multer middleware, Cloudinary upload)
+Why Cloudinary? Free tier, easy integration, image optimization
+
+STEP 3: Food Recognition (Clarifai)
+Backend Route: /api/food/identify
+Process: Receive image URL, call Clarifai API, return top predictions
+
+STEP 4: Portion Selection (Frontend)
+UI: Show identified food, dropdown/buttons for portion, confirm button
+
+STEP 5: Nutrition Data (USDA API)
+Backend Route: /api/food/nutrition
+Process: Check cache, call USDA API if needed, calculate nutrition, cache for future
+
+STEP 6: Save Food Log
+Backend Route: /api/foodlog/create
+Process: Receive data, create FoodLog document, save to MongoDB
+
+STEP 7: View History
+Backend Route: /api/foodlog/history
+Process: Query FoodLog model, return paginated results
+
+Complete API Endpoints
+
+Auth
+- POST /api/auth/register
+- POST /api/auth/login
+- GET /api/auth/me
+
+Upload
+- POST /api/upload/image
+
+Food
+- POST /api/food/identify
+- POST /api/food/nutrition
+- GET /api/food/search
+
+Food Log
+- POST /api/foodlog/create
+- GET /api/foodlog/history
+- GET /api/foodlog/:id
+- PUT /api/foodlog/:id
+- DELETE /api/foodlog/:id
+
+Key NPM Packages
+
+Backend
+- express
+- mongoose
+- bcryptjs
+- jsonwebtoken
+- multer
+- cloudinary
+- axios
+- dotenv
+- cors
+
+Frontend
+- react-router-dom
+- axios
+- react-hook-form
+- Context API or Redux (optional)
+
+Environment Variables (.env)
+MONGO_URI=your_mongodb_connection
+JWT_SECRET=your_secret_key
+CLOUDINARY_CLOUD_NAME=...
+CLOUDINARY_API_KEY=...
+CLOUDINARY_API_SECRET=...
+CLARIFAI_API_KEY=...
+USDA_API_KEY=...
+
+Difficulty Breakdown
+- User Auth: 3/10
+- Image Upload: 4/10
+- Clarifai Integration: 5/10
+- USDA Integration: 4/10
+- Food Log CRUD: 3/10
+- Frontend UI: 5/10

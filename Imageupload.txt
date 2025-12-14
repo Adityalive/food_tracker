@@ -1,0 +1,12 @@
+Frontend (React)
+    ↓ (User selects image)
+    ↓ (Send to backend)
+Backend (Express)
+    ↓ (Receive image with Multer)
+    ↓ (Upload to Cloudinary)
+Cloudinary
+    ↓ (Returns image URL)
+Backend
+    ↓ (Send URL back to frontend)
+Frontend
+    ↓ (Display image + proceed to food identification)
