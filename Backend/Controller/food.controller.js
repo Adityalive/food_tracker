@@ -1,4 +1,4 @@
-import { identifyFoodFromImage } from '../utils/googleVisionHelper.js';
+import { identifyFoodFromImage } from '../utils/huggingFaceHelper.js';
 
 /**
  * Identify food from uploaded image
@@ -24,7 +24,7 @@ export const identifyFood = async (req, res) => {
             });
         }
 
-        // Call Google Vision API
+        // Call Hugging Face API
         const predictions = await identifyFoodFromImage(imageUrl);
 
         // Check if any food detected
@@ -53,19 +53,19 @@ export const identifyFood = async (req, res) => {
     } catch (error) {
         console.error('Food identification error:', error);
 
-        // Check if it's an API key error
-        if (error.message.includes('API key')) {
-            return res.status(401).json({
+        // Check if it's a rate limit error
+        if (error.message.includes('rate limit')) {
+            return res.status(429).json({
                 success: false,
-                message: 'Invalid API key configuration'
+                message: 'Too many requests. Please try again in a few minutes.'
             });
         }
 
-        // Check if it's a quota error
-        if (error.message.includes('quota')) {
-            return res.status(429).json({
+        // Check if it's an API token error
+        if (error.message.includes('token')) {
+            return res.status(401).json({
                 success: false,
-                message: 'API quota exceeded. Please try again later or enter food manually.'
+                message: 'API authentication failed. Please contact support.'
             });
         }
 
