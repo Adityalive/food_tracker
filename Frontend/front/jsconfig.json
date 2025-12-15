@@ -1,0 +1,12 @@
+// jsconfig.json
+
+{
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      // Map the alias for VS Code as well
+      "@components/*": ["src/componets/*"]
+    }
+  },
+  "include": ["src/**/*"]
+}
