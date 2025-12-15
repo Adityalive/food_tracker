@@ -5,6 +5,7 @@ import connectDB from "./config/db.js";
 import user from "./Routers/User.route.js";
 import uploadRoutes from "./Routers/upload.route.js"
 import foodRoutes from "./Routers/food.route.js"
+import nutritionRoutes from "./Routers/nutrition.route.js"
 connectDB();
 
 const app =express();
@@ -17,6 +18,7 @@ app.use("/api/auth",user);
 
 app.use("/api/upload", uploadRoutes); // NEW
 app.use("/api/food", foodRoutes)
+app.use("/api/nutrition", nutritionRoutes);
 
 // Error handling middleware for multer errors
 app.use((error, req, res, next) => {
