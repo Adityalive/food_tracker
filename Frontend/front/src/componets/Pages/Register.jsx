@@ -4,8 +4,9 @@ import React, { useState } from "react"
 import { Link } from "react-router-dom"
 import { authAPI } from "../../services/api"
 
-export default function LoginForm() {
+export default function RegisterForm() {
   const [formData, setFormData] = useState({
+    username: "",
     email: "",
     password: "",
   })
@@ -20,14 +21,12 @@ export default function LoginForm() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      const response = await authAPI.login(formData)
-      const { token } = response.data
-      localStorage.setItem('token', token)
-      alert('Login successful!')
-      // TODO: Redirect to dashboard or home page
+      await authAPI.register(formData)
+      alert('Registration successful! Please login.')
+      // TODO: Redirect to login page
     } catch (error) {
-      console.error('Login failed:', error.response?.data?.message || error.message)
-      alert('Login failed: ' + (error.response?.data?.message || 'Unknown error'))
+      console.error('Registration failed:', error.response?.data?.message || error.message)
+      alert('Registration failed: ' + (error.response?.data?.message || 'Unknown error'))
     }
   }
 
@@ -38,8 +37,21 @@ export default function LoginForm() {
         onSubmit={handleSubmit}
       >
         <h2 className="text-center text-white text-2xl font-bold mb-6">
-          Login
+          Sign Up
         </h2>
+
+        <div className="flex items-center gap-2.5 p-3 rounded-[20px] bg-[#171717] shadow-[inset_2px_5px_10px_#050505] mb-4 group">
+          <UserIcon />
+          <input
+            name="username"
+            placeholder="Username"
+            className="bg-transparent border-none outline-none text-[#d3d3d3] w-full"
+            type="text"
+            value={formData.username}
+            onChange={handleChange}
+            required
+          />
+        </div>
 
         <div className="flex items-center gap-2.5 p-3 rounded-[20px] bg-[#171717] shadow-[inset_2px_5px_10px_#050505] mb-4 group">
           <EmailIcon />
@@ -69,24 +81,17 @@ export default function LoginForm() {
 
         <button
           type="submit"
-          className="w-full py-2.5 mt-7 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-semibold"
+          className="w-full py-2.5 mt-7 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold"
         >
-          Login
+          Sign Up
         </button>
 
         <Link
-          to="/register"
+          to="/signup"
           className="block mt-6 w-full py-2 rounded-lg bg-[#252525] text-white text-center hover:bg-[#333] transition-colors"
         >
-          Don't have an account? Sign Up
+          Already have an account? Login
         </Link>
-
-        <button
-          type="button"
-          className="mt-4 w-full py-2 rounded-lg bg-[#252525] text-white"
-        >
-          Forgot Password?
-        </button>
       </form>
     </div>
   )

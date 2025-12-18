@@ -1,14 +1,9 @@
-import { identifyFoodFromImage } from '../utils/huggingFaceHelper.js';
+import { identifyFoodFromImage } from '../utils/replicateHelper.js';
 
-/**
- * Identify food from uploaded image
- * POST /api/food/identify
- */
 export const identifyFood = async (req, res) => {
     try {
         const { imageUrl } = req.body;
 
-        // Validate imageUrl
         if (!imageUrl) {
             return res.status(400).json({
                 success: false,
@@ -16,62 +11,48 @@ export const identifyFood = async (req, res) => {
             });
         }
 
-        // Validate URL format
-        if (!imageUrl.startsWith('http://') && !imageUrl.startsWith('https://')) {
-            return res.status(400).json({
-                success: false,
-                message: 'Invalid image URL format'
-            });
+        console.log('🔍 Identifying food from:', imageUrl);
+
+        let predictions = [];
+        let aiSuccess = false;
+
+        try {
+            predictions = await identifyFoodFromImage(imageUrl);
+            aiSuccess = true;
+            console.log('✅ AI predictions:', predictions);
+        } catch (aiError) {
+            console.error('⚠️ AI failed:', aiError.message);
         }
 
-        // Call Hugging Face API
-        const predictions = await identifyFoodFromImage(imageUrl);
-
-        // Check if any food detected
-        if (predictions.length === 0) {
+        if (!aiSuccess || predictions.length === 0) {
             return res.status(200).json({
                 success: true,
-                message: 'No food detected in image. Please try another image or enter food manually.',
+                message: 'AI could not identify food. Please search manually.',
                 data: {
                     predictions: [],
-                    imageUrl: imageUrl
+                    imageUrl: imageUrl,
+                    fallbackToManualSearch: true
                 }
             });
         }
 
-        // Return predictions
+        // Return multiple suggestions for user to choose
         return res.status(200).json({
             success: true,
-            message: 'Food identified successfully',
+            message: 'Food suggestions generated. Please select the correct one or search manually.',
             data: {
-                topPrediction: predictions[0],
                 predictions: predictions,
-                imageUrl: imageUrl
+                topPrediction: predictions[0],
+                imageUrl: imageUrl,
+                instruction: 'Select one or search manually below'
             }
         });
 
     } catch (error) {
         console.error('Food identification error:', error);
-
-        // Check if it's a rate limit error
-        if (error.message.includes('rate limit')) {
-            return res.status(429).json({
-                success: false,
-                message: 'Too many requests. Please try again in a few minutes.'
-            });
-        }
-
-        // Check if it's an API token error
-        if (error.message.includes('token')) {
-            return res.status(401).json({
-                success: false,
-                message: 'API authentication failed. Please contact support.'
-            });
-        }
-
         return res.status(500).json({
             success: false,
-            message: 'Failed to identify food. Please try again or enter food manually.',
+            message: 'Error processing image. Please search manually.',
             error: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
     }

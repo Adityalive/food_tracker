@@ -11,16 +11,33 @@ export const searchFood = async (foodName) => {
     try {
         const apiKey = process.env.USDA_API_KEY;
         
+        // Validate API key exists
+        if (!apiKey) {
+            throw new Error('USDA API key is not configured');
+        }
+
+        // Validate food name
+        if (!foodName || foodName.trim() === '') {
+            throw new Error('Food name is required');
+        }
+
+        console.log('Searching USDA for:', foodName);
+        console.log('Using API key:', apiKey.substring(0, 10) + '...');
+
         const response = await axios.get(`${USDA_API_BASE}/foods/search`, {
             params: {
-                api_key: apiKey,
-                query: foodName,
-                pageSize: 10, // Get top 10 results
-                dataType: ['Survey (FNDDS)', 'Branded', 'Foundation', 'SR Legacy'] // All food types
+                query: foodName.trim(),
+                pageSize: 10,
+                api_key: apiKey  // IMPORTANT: api_key must be AFTER query
             }
         });
 
         const foods = response.data.foods || [];
+
+        if (foods.length === 0) {
+            console.log('No foods found for:', foodName);
+            return [];
+        }
 
         // Format the results
         const formattedFoods = foods.map(food => ({
@@ -28,13 +45,24 @@ export const searchFood = async (foodName) => {
             description: food.description,
             brandName: food.brandName || null,
             dataType: food.dataType,
-            score: food.score // Relevance score
+            score: food.score
         }));
 
+        console.log(`Found ${formattedFoods.length} foods`);
         return formattedFoods;
 
     } catch (error) {
         console.error('USDA Search Error:', error.response?.data || error.message);
+        
+        // Better error messages
+        if (error.response?.status === 403) {
+            throw new Error('Invalid USDA API key');
+        }
+        
+        if (error.response?.status === 500) {
+            throw new Error('USDA service error. Please try again or search manually.');
+        }
+        
         throw new Error('Failed to search food in USDA database');
     }
 };
@@ -48,6 +76,16 @@ export const getFoodDetails = async (fdcId) => {
     try {
         const apiKey = process.env.USDA_API_KEY;
         
+        if (!apiKey) {
+            throw new Error('USDA API key is not configured');
+        }
+
+        if (!fdcId) {
+            throw new Error('Food ID is required');
+        }
+
+        console.log('Getting nutrition for FDC ID:', fdcId);
+
         const response = await axios.get(`${USDA_API_BASE}/food/${fdcId}`, {
             params: {
                 api_key: apiKey
@@ -55,8 +93,6 @@ export const getFoodDetails = async (fdcId) => {
         });
 
         const food = response.data;
-
-        // Extract nutrients
         const nutrients = food.foodNutrients || [];
 
         // Helper function to find nutrient value
@@ -75,19 +111,15 @@ export const getFoodDetails = async (fdcId) => {
             servingSize: food.servingSize || 100,
             servingSizeUnit: food.servingSizeUnit || 'g',
             
-            // Macronutrients per 100g
             calories: getNutrient('energy') || getNutrient('calories'),
             protein: getNutrient('protein'),
             carbohydrates: getNutrient('carbohydrate'),
             fat: getNutrient('total lipid') || getNutrient('fat'),
             fiber: getNutrient('fiber'),
             sugar: getNutrient('sugars'),
-            
-            // Optional micronutrients
             sodium: getNutrient('sodium'),
             cholesterol: getNutrient('cholesterol'),
             
-            // Full nutrients list (for detailed view)
             allNutrients: nutrients.map(n => ({
                 name: n.nutrient?.name,
                 amount: n.amount,
@@ -99,6 +131,11 @@ export const getFoodDetails = async (fdcId) => {
 
     } catch (error) {
         console.error('USDA Details Error:', error.response?.data || error.message);
+        
+        if (error.response?.status === 404) {
+            throw new Error('Food not found in USDA database');
+        }
+        
         throw new Error('Failed to get food details from USDA');
     }
 };
@@ -127,3 +164,5 @@ export const calculatePortionNutrition = (nutritionData, portionGrams) => {
         cholesterol: Math.round(nutritionData.cholesterol * multiplier)
     };
 };
+
+

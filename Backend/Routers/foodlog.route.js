@@ -4,7 +4,7 @@ import {
     getAllFoodLogs,
     getTodaysFoodLogs,
     deleteFoodLog
-} from '../controllers/foodlog.controller.js';
+} from '../Controller/foodlog.controller.js';
 import auth from '../middleware/auth.middleware.js';
 
 const router = Router();

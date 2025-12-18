@@ -4,12 +4,16 @@ import { useState } from "react"
 import { Upload } from "lucide-react"
 // Path from src/componets/Pages/Image-upload.jsx to src/componets/ui/button
 import { Button } from "../ui/button";
+import { uploadAPI, foodAPI, nutritionAPI } from "../../services/api";
 export default function ImageUploadPage() {
   const [selectedImage, setSelectedImage] = useState(null)
+  const [selectedFile, setSelectedFile] = useState(null)
   const [quote, setQuote] = useState("")
   const [isDragging, setIsDragging] = useState(false)
+  const [isUploading, setIsUploading] = useState(false)
 
   const handleImageUpload = (file) => {
+    setSelectedFile(file)
     const reader = new FileReader()
     reader.onload = (e) => {
       setSelectedImage(e.target?.result)
@@ -42,17 +46,48 @@ export default function ImageUploadPage() {
     setIsDragging(false)
   }
 
-  const handleUploadClick = () => {
-    // Simulate quote generation
-    const quotes = [
-      "The best time to plant a tree was 20 years ago. The second best time is now.",
-      "Success is not final, failure is not fatal: it is the courage to continue that counts.",
-      "Believe you can and you're halfway there.",
-      "The only way to do great work is to love what you do.",
-      "Innovation distinguishes between a leader and a follower.",
-    ]
-    const randomQuote = quotes[Math.floor(Math.random() * quotes.length)]
-    setQuote(randomQuote)
+  const handleUploadClick = async () => {
+    if (!selectedFile) return
+
+    setIsUploading(true)
+    try {
+      // Step 1: Upload image to Cloudinary
+      const formData = new FormData()
+      formData.append('image', selectedFile)
+
+      const uploadResponse = await uploadAPI.uploadImage(formData)
+      const { data: uploadData } = uploadResponse.data
+
+      // Step 2: Identify food from the uploaded image
+      const foodResponse = await foodAPI.identifyFood(uploadData.imageUrl)
+      const { data: foodData } = foodResponse.data
+
+      if (foodData.predictions.length === 0) {
+        setQuote('No food detected in the image. Please try another image.')
+        return
+      }
+
+      const topFood = foodData.topPrediction.name
+
+      // Step 3: Get nutrition information for the identified food
+      const nutritionResponse = await nutritionAPI.getNutrition(topFood)
+      const { data: nutritionData } = nutritionResponse.data
+
+      // Display the results
+      const nutritionInfo = nutritionData.foods[0]
+      setQuote(`🍽️ **${topFood}** (100g)
+• Calories: ${nutritionInfo.nf_calories} kcal
+• Protein: ${nutritionInfo.nf_protein}g
+• Carbs: ${nutritionInfo.nf_total_carbohydrate}g
+• Fat: ${nutritionInfo.nf_total_fat}g`)
+
+    } catch (error) {
+      console.error('Process failed:', error.response?.data?.message || error.message)
+      const errorMessage = error.response?.data?.message || error.message || 'Unknown error'
+      setQuote(`Process failed: ${errorMessage}`)
+    } finally {
+      setIsUploading(false)
+    }
   }
 
   return (
@@ -97,10 +132,10 @@ export default function ImageUploadPage() {
             {/* Upload Button */}
             <Button
               onClick={handleUploadClick}
-              disabled={!selectedImage}
+              disabled={!selectedImage || isUploading}
               className="upload-button w-full py-6 text-lg font-semibold bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
             >
-              Upload
+              {isUploading ? 'Uploading...' : 'Upload'}
             </Button>
           </div>
 
