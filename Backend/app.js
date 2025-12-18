@@ -19,7 +19,7 @@ app.use("/api/auth",user);
 app.use("/api/upload", uploadRoutes); // NEW
 app.use("/api/food", foodRoutes)
 app.use("/api/nutrition", nutritionRoutes);
-
+app.use("/api/foodlog", foodlogRoutes);
 // Error handling middleware for multer errors
 app.use((error, req, res, next) => {
     if (error instanceof multer.MulterError) {
