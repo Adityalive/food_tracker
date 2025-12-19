@@ -1,4 +1,5 @@
 import * as mobilenet from '@tensorflow-models/mobilenet';
+import * as tf from '@tensorflow/tfjs';
 
 let model = null;
 

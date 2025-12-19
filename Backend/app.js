@@ -8,6 +8,7 @@ import user from "./Routers/User.route.js";
 import uploadRoutes from "./Routers/upload.route.js"
 import nutritionRoutes from "./Routers/nutrition.route.js"
 import foodlogRoutes from "./Routers/foodlog.route.js"
+import foodRoutes from "./Routers/food.route.js"
 connectDB();
 
 const app = express();
@@ -22,6 +23,7 @@ app.use("/api/auth",user);
 app.use("/api/upload", uploadRoutes); // NEW
 app.use("/api/nutrition", nutritionRoutes);
 app.use("/api/foodlog", foodlogRoutes);
+app.use("/api/food", foodRoutes);
 // Error handling middleware for multer errors
 app.use((error, req, res, next) => {
     if (error instanceof multer.MulterError) {

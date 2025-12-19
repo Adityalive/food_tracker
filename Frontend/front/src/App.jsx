@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Routes, Route } from "react-router-dom"
 import { initModel } from './utils/foodAI';
 
@@ -7,12 +7,14 @@ import Loadingpage from './componets/Pages/Loadingpage'
 import Signup from './componets/Pages/Signup'
 import Register from './componets/Pages/Register'
 import ImageUploadPage from './componets/Pages/Image-upload'
-useEffect(() => {
-    initModel().then(() => {
-        console.log('AI ready!');
-    });
-}, []);
+
 const App = () => {
+  useEffect(() => {
+    initModel().then(() => {
+      console.log('AI ready!');
+    });
+  }, []);
+
   return (
     <Routes>
 
