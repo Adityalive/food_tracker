@@ -5,10 +5,15 @@ const Card = () => {
   return (
     <StyledWrapper>
       <div className="card">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 5H4V19L13.2923 9.70649C13.6828 9.31595 14.3159 9.31591 14.7065 9.70641L20 15.0104V5ZM2 3.9934C2 3.44476 2.45531 3 2.9918 3H21.0082C21.556 3 22 3.44495 22 3.9934V20.0066C22 20.5552 21.5447 21 21.0082 21H2.9918C2.44405 21 2 20.5551 2 20.0066V3.9934ZM8 11C6.89543 11 6 10.1046 6 9C6 7.89543 6.89543 7 8 7C9.10457 7 10 7.89543 10 9C10 10.1046 9.10457 11 8 11Z" /></svg>
+        {/* Updated SVG: A Healthy Food / Apple Icon to match Nutrition theme */}
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path d="M20.59 13.41c-1.61 0-3.07-.63-4.18-1.64 1.12-1.89 1.13-4.13.06-6.03-.54-.95-1.34-1.69-2.28-2.14.77-1.35 2.4-2.13 3.73-2.6.43-.15 1.05.08 1.25.5 1.77 3.73 1.07 8.57 1.42 11.91zM12 22c-4.97 0-9-4.03-9-9 0-4.48 3.28-8.19 7.57-8.9.1.53.25 1.07.45 1.6 1.48 3.82 4.9 6.27 8.93 6.3.06.67.1 1.35.05 2-.51 4.62-4.38 8-8 8z" />
+        </svg>
         <div className="card__content">
-          <p className="card__title">Card Title</p>
-          <p className="card__description">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco.</p>
+          <p className="card__title">AI Nutrition Scan</p>
+          <p className="card__description">
+            Instantly analyze your meals with our advanced AI. Get detailed breakdowns of calories, proteins, and macros just by uploading a photo.
+          </p>
         </div>
       </div>
     </StyledWrapper>
@@ -20,26 +25,31 @@ const StyledWrapper = styled.div`
     position: relative;
     width: 300px;
     height: 200px;
-    background-color: #f2f2f2;
+    /* CHANGED: Dark theme background to match your app */
+    background-color: #1a1a1a; 
+    border: 1px solid #333;
     border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
     perspective: 1000px;
-    box-shadow: 0 0 0 5px #ffffff80;
+    box-shadow: 0 0 0 5px rgba(0, 0, 0, 0.2);
     transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
 
   .card svg {
     width: 48px;
-    fill: #333;
+    /* CHANGED: Cyan color to match your buttons */
+    fill: #22d3ee; 
     transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
 
   .card:hover {
     transform: scale(1.05);
-    box-shadow: 0 8px 16px rgba(255, 255, 255, 0.2);
+    /* CHANGED: Cyan glow on hover */
+    box-shadow: 0 8px 16px rgba(34, 211, 238, 0.15);
+    border-color: #22d3ee;
   }
 
   .card__content {
@@ -50,10 +60,14 @@ const StyledWrapper = styled.div`
     height: 100%;
     padding: 20px;
     box-sizing: border-box;
-    background-color: #f2f2f2;
+    /* CHANGED: Match card background */
+    background-color: #1a1a1a; 
     transform: rotateX(-90deg);
     transform-origin: bottom;
     transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 
   .card:hover .card__content {
@@ -62,9 +76,11 @@ const StyledWrapper = styled.div`
 
   .card__title {
     margin: 0;
-    font-size: 24px;
-    color: #333;
+    font-size: 22px;
+    /* CHANGED: White text for dark mode */
+    color: #fff; 
     font-weight: 700;
+    margin-bottom: 8px;
   }
 
   .card:hover svg {
@@ -72,10 +88,12 @@ const StyledWrapper = styled.div`
   }
 
   .card__description {
-    margin: 10px 0 0;
+    margin: 0;
     font-size: 14px;
-    color: #777;
-    line-height: 1.4;
-  }`;
+    /* CHANGED: Lighter gray for readability */
+    color: #a3a3a3; 
+    line-height: 1.5;
+  }
+`;
 
 export default Card;
