@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { Routes, Route } from "react-router-dom"
-import { initModel } from './utils/foodAI';
+// REMOVED: import { initModel } from './utils/foodAI'; -> Backend handles this now!
+// REMOVED: import FoodUpload -> Not used here (it's likely inside ImageUploadPage)
 
 import Navbar from './componets/Navbar/Navbar'
 import Loadingpage from './componets/Pages/Loadingpage'
@@ -9,15 +10,11 @@ import Register from './componets/Pages/Register'
 import ImageUploadPage from './componets/Pages/Image-upload'
 
 const App = () => {
-  useEffect(() => {
-    initModel().then(() => {
-      console.log('AI ready!');
-    });
-  }, []);
+  // REMOVED: The useEffect that loaded the model is gone.
+  // The backend is now always ready to accept images.
 
   return (
     <Routes>
-
       {/* LANDING PAGE */}
       <Route
         path="/"
@@ -29,9 +26,14 @@ const App = () => {
         }
       />
 
-      {/* SIGNUP PAGE */}
+      {/* AUTH PAGES */}
       <Route path="/signup" element={<Signup />} />
       <Route path="/register" element={<Register />} />
+      
+      {/* ⚠️ IMPORTANT: 
+        Make sure your 'ImageUploadPage.js' imports and renders 
+        the updated 'FoodUpload' component we just wrote! 
+      */}
       <Route path='/image-upload' element={<ImageUploadPage />}/>
     </Routes>
   )

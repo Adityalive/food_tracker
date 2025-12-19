@@ -1,10 +1,10 @@
-import { Router } from 'express';
+import express from 'express';
 import { identifyFood } from '../Controller/food.controller.js';
-import auth from '../middleware/auth.middleware.js';
+import uploadMiddleware from '../middleware/upload.middleware.js'; // Make sure this path is correct
 
-const router = Router();
+const router = express.Router();
 
-// Identify food from image - Protected route
-router.post('/identify', auth, identifyFood);
+// ⚠️ IMPORTANT: 'image' must match the key used in Postman or Frontend FormData
+router.post('/identify', uploadMiddleware.single('image'), identifyFood);
 
 export default router;
