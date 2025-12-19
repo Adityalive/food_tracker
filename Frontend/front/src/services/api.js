@@ -29,11 +29,7 @@ export const uploadAPI = {
 
 export const foodAPI = {
   // CHANGE: Now accepts formData directly
-  identifyFood: (formData) => api.post('/food/identify', formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  }),
+  identifyFood: (formData) => api.post('/food/identify', formData),
 };
 
 export const nutritionAPI = {
